@@ -1,3 +1,4 @@
+![Ai Generated Logo](logo.jpg)
 # Python Package Upgrader 🐍
 
 Python Package Upgrader is a simple GUI app that makes it easy to update and backup your installed Python packages. With a single click, users can create a backup and update all installed Python packages. This simplifies the process of keeping libraries up to date.
