@@ -12,14 +12,17 @@ from tkinter import *
 import webbrowser
 
 root = tkinter.Tk()
-root.title("Python Packages Updater - V.1.0.0")
+root.title("Python Packages Updater - V.1.0.2")
 root.wm_iconbitmap("icon.ico")
 
-top_frame = tkinter.Frame(root)
-top_frame.pack(side=tkinter.TOP, anchor=tkinter.E)
+help_image = PhotoImage(file="help.png")
+about_image = PhotoImage(file="about.png")
 
-hbutton1 = tkinter.Button(top_frame, text="Help", command=lambda:tkinter.messagebox.showinfo(title="Help", message="""This app can create a backup and update all your installed Python packages with a single click.
-________________________________________________________________
+help_image = help_image.subsample(4,4)
+about_image = about_image.subsample(4,4)
+
+help_button = Button(root, image=help_image, command= lambda:tkinter.messagebox.showinfo(title="Help", message="""This app can create a backup and update all your installed Python packages with a single click.
+_______________________________________________________________
 
 # If you want to create a backup of all your installed Python libraries, click the "Create a backup" button. After doing this, you can fully uninstall your Python version and upgrade or downgrade as needed.
 
@@ -27,25 +30,23 @@ ________________________________________________________________
 
 # If you have an existing backup, you can restore it using the "Install Packages (Via Backup)" button. This will install all the backed-up packages with the same package versions.
 
-# If you have an existing backup, you can restore it and update all packages to their latest versions using the "Install Packages (Via Backup) & Update All" button. This will install all the backed-up packages with their latest versions."""))
-hbutton1.pack(side=tkinter.LEFT)
-hbutton1.lift()
+# If you have an existing backup, you can restore it and update all packages to their latest versions using the "Install Packages (Via Backup) & Update All" button. This will install all the backed-up packages with their latest versions.""" ))
+help_button.place(relx=1,rely=0,anchor='ne')
 
-hbutton2 = tkinter.Button(top_frame, text="About", command=lambda: tkinter.messagebox.showinfo(title="About", message="""About this application:
+about_button = Button(root, image=about_image, command= lambda:tkinter.messagebox.showinfo(title="About", message="""About this application:
 
 This application has been designed to facilitate the management of Python libraries. With a single click, users can create a backup and update all installed Python packages. This simplifies the process of keeping libraries up to date.
 
-The app is intended for anyone who uses Python and wants an easy way to manage their libraries. It has been developed by Himal Erangana and is currently on version 1.0.1.
+The app is intended for anyone who uses Python and wants an easy way to manage their libraries. It has been developed by Himal Erangana and is currently on version 1.0.2.
 
 We welcome feedback and suggestions from our users. If you have any comments or questions, please contact us at .
 
-Application version: 1.0.1
+Application version: 1.0.2
 Developer: Himal Erangana (linktr.ee/himalerangana)
 """))
-hbutton2.pack(side=tkinter.LEFT)
-hbutton2.lift()
+about_button.place(relx=1,rely=0,anchor='ne',x=-help_button.winfo_reqwidth())
 
-namelabel = tkinter.Label(root, text="Python Packages Updater - Version 1.0.0", font=("Bebas Neue", 20, "bold"), foreground="#393646")
+namelabel = tkinter.Label(root, text="Python Packages Updater - Version 1.0.2", font=("Bebas Neue", 20, "bold"), foreground="#393646")
 namelabel.pack()
 namelabel.lift()
 
@@ -66,16 +67,15 @@ def dec():
     with open('bkp.hsup', 'wb') as f:
         f.write(data_base64)
 def internet_stat():
+    global stat
     try:
         urlopen("https://google.com")
         stat = True
     except:
         stat = False
     if stat == True:
-        del stat
         pass
     else:
-        del stat
         tkinter.messagebox.showwarning(title="Warning...!", message="You need a proper internet connection to perform this action. Please make sure you have an internet connection.")
 def create_bkp():
     file_status()
@@ -97,91 +97,94 @@ def create_bkp():
 
 def update_all():
     internet_stat()
-    file_status()
-    if file_stat == True:
-        try:
+    if stat == True:
+        file_status()
+        if file_stat == True:
+            try:
+                os.remove("temp.hsup")
+            except Exception as e:
+                del e
+            uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
+            uptext.update()
+            with open("temp.hsup",'w') as f:
+                process = Popen(['pip', 'freeze'], stdout=f)
+                process.wait()
+            process = Popen(['pip', 'install', '-r', 'temp.hsup'], stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            uptext.insert(tkinter.END, stdout)
+            uptext.insert(tkinter.END, stderr)
+            uptext.update()
             os.remove("temp.hsup")
-        except Exception as e:
-            del e
-        uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
-        uptext.update()
-        with open("temp.hsup",'w') as f:
-            process = Popen(['pip', 'freeze'], stdout=f)
-            process.wait()
-        process = Popen(['pip', 'install', '-r', 'temp.hsup'], stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
-        uptext.insert(tkinter.END, stdout)
-        uptext.insert(tkinter.END, stderr)
-        uptext.update()
-        os.remove("temp.hsup")
-        uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
-        uptext.update()
-    else:
-        uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
-        uptext.update()
-        with open("temp.hsup",'w') as f:
-            process = Popen(['pip', 'freeze'], stdout=f)
-            process.wait()
-        process = Popen(['pip', 'install', '-r', 'temp.hsup'], stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
-        uptext.insert(tkinter.END, stdout)
-        uptext.insert(tkinter.END, stderr)
-        uptext.update()
-        os.remove("temp.hsup")
-        uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
-        uptext.update()
+            uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
+            uptext.update()
+        else:
+            uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
+            uptext.update()
+            with open("temp.hsup",'w') as f:
+                process = Popen(['pip', 'freeze'], stdout=f)
+                process.wait()
+            process = Popen(['pip', 'install', '-r', 'temp.hsup'], stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            uptext.insert(tkinter.END, stdout)
+            uptext.insert(tkinter.END, stderr)
+            uptext.update()
+            os.remove("temp.hsup")
+            uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
+            uptext.update()
 
 def update_backup():
     internet_stat()
-    file_status()
-    if file_stat == True:
-        uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
-        uptext.update()
-        dec()
-        process = Popen(['pip', 'install', '-r', 'bkp.hsup'], stdout=PIPE, stderr=PIPE)
-        try:
-            stdout, stderr = process.communicate()
-            uptext.insert(tkinter.END, stdout)
-            uptext.insert(tkinter.END, stderr)
-            uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
+    if stat == True:
+        file_status()
+        if file_stat == True:
+            uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
             uptext.update()
-        except:
+            dec()
+            process = Popen(['pip', 'install', '-r', 'bkp.hsup'], stdout=PIPE, stderr=PIPE)
+            try:
+                stdout, stderr = process.communicate()
+                uptext.insert(tkinter.END, stdout)
+                uptext.insert(tkinter.END, stderr)
+                uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
+                uptext.update()
+            except:
+                tkinter.messagebox.showerror(title="An error occured.",message="Couldn't find a Backup file. :(")
+            uptext.update()
+        else:
             tkinter.messagebox.showerror(title="An error occured.",message="Couldn't find a Backup file. :(")
-        uptext.update()
-    else:
-        tkinter.messagebox.showerror(title="An error occured.",message="Couldn't find a Backup file. :(")
 
 def update_backup_upgrade():
     internet_stat()
-    file_status()
-    if file_stat == True:
-        uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
-        uptext.update()
-        dec()
-        process = Popen(['pip', 'install', '-r', 'bkp.hsup', '--upgrade'], stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
-        try:
-            stdout, stderr = process.communicate()
-            uptext.insert(tkinter.END, stdout)
-            uptext.insert(tkinter.END, stderr)
-            uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
+    if stat == True:
+        file_status()
+        if file_stat == True:
+            uptext.insert(tkinter.END, ("Started updating... @ "+str(dt.now())+".\n"))
             uptext.update()
-        except:
+            dec()
+            process = Popen(['pip', 'install', '-r', 'bkp.hsup', '--upgrade'], stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            try:
+                stdout, stderr = process.communicate()
+                uptext.insert(tkinter.END, stdout)
+                uptext.insert(tkinter.END, stderr)
+                uptext.insert(tkinter.END, ("Job finished successfuly...! @ "+str(dt.now())+".\n"))
+                uptext.update()
+            except:
+                tkinter.messagebox.showerror(title="An error occured.",message="Couldn't find a Backup file. :(")
+            uptext.update()
+        else:
             tkinter.messagebox.showerror(title="An error occured.",message="Couldn't find a Backup file. :(")
-        uptext.update()
-    else:
-        tkinter.messagebox.showerror(title="An error occured.",message="Couldn't find a Backup file. :(")
 
-but1 = tkinter.Button(root, text="Update All", command=update_all)
+but1 = tkinter.Button(root, text="Update All", command=update_all, background="#ffe670", foreground="#000000", font=("Helvetica", 13), padx=5, pady=2, borderwidth=2, relief="raised")
 but1.pack()
 
-but2 = tkinter.Button(root, text="Create a Backup", command=create_bkp)
+but2 = tkinter.Button(root, text="Create a Backup", command=create_bkp, background="#26619c", foreground="#ffffff", font=("Helvetica", 13), padx=5, pady=2, borderwidth=2, relief="raised")
 but2.pack()
 
-but3 = tkinter.Button(root, text="Install Packages (Via Backup)", command=update_backup)
+but3 = tkinter.Button(root, text="Install Packages (Via Backup)", command=update_backup, background="#ffe670", foreground="#000000", font=("Helvetica", 13), padx=5, pady=2, borderwidth=2, relief="raised")
 but3.pack()
 
-but4 = tkinter.Button(root, text="Install Packages (Via Backup) & Update all", command=update_backup_upgrade)
+but4 = tkinter.Button(root, text="Install Packages (Via Backup) & Update all", command=update_backup_upgrade, background="#26619c", foreground="#ffffff", font=("Helvetica", 13), padx=5, pady=2, borderwidth=2, relief="raised")
 but4.pack()
 
 space1label = tkinter.Label(root, text=" ", font=("Bebas Neue", 20, "bold"), foreground="#393646")
@@ -208,6 +211,5 @@ links.bind("<Button-1>", lambda e: callback("https://linktr.ee/himalerangana"))
 
 uptext.insert(tkinter.END, ("Program successfully launched @ "+str(dt.now())+".\n"))
 uptext.update()
-
 
 root.mainloop()
