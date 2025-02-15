@@ -7,7 +7,7 @@ The app is intended for anyone who uses Python and wants an easy way to manage t
 
 ## Read the full Documentation... 📖
 
-[Click here](https://himaleranganaofficial.github.io/Learning-CSS/RWD%20on%20FreeCodeCamp/Certificate%20Project%2003%20-%20PPU%20Web%20Doc/) to read the full official documentation abput PPU
+[Click here](https://himaleranganaofficial.github.io/Learning-CSS/RWD%20on%20FreeCodeCamp/Certificate%20Project%2003%20-%20PPU%20Web%20Doc/) to read the full official documentation about PPU
 
 ## Features 🚀
 
